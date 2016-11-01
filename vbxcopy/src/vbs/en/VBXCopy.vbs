@@ -137,16 +137,6 @@ Const ShowResultFinal = 3
 Const ShowResultErrors = 4
 Const ShowResultInfo = 5
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'
-' Global Application Constants
-'
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-Const AppTitle = "VBXCopy"
-Const AppVersion = "1.0.11"
-Const AppLanguage = "en"
-
 'Dim pars
 
 Main()
