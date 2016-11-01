@@ -1,0 +1,3 @@
+Set WSHShell = Wscript.CreateObject("Wscript.Shell")
+WSHShell.popup "Your computer has just received Windows Update." & vbcrlf & "Pls restart your machine at the next convenient time for new settings to come into effect." & vbcrlf & "Thank you - Marimba Team ",300,"Marimba Support",64
+
