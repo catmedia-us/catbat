@@ -33,7 +33,7 @@
 'D-80799 München 
 'Germany
 '
-'Complementary: 
+'General Partner: 
 'Creative Arts & Technologies Ltd.
 'Companies House Nr. 9724030 
 '
