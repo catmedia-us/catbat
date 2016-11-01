@@ -140,6 +140,7 @@ Const ShowResultInfo = 5
 'Dim pars
 
 Main()
+Main()
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
@@ -162,17 +163,17 @@ Function ShowDriveType(Drive)
 	
 	Select Case Drive.DriveType
 	Case DriveTypeRemovable
-		S = "Removable Media"
+		S = "Wechselmedium"
 	Case DriveTypeFixed
-		S = "Fixed"
+		S = "Fest"
 	Case DriveTypeNetwork
-		S = "Network"
+		S = "Netzwerk"
 	Case DriveTypeCDROM
 		S = "CD-ROM"
 	Case DriveTypeRAMDisk
-		S = "RAM-Drive"
+		S = "RAM-Laufwerk"
 	Case Else
-		S = "Unknown"
+		S = "Unbekannt"
 	End Select
 
 	ShowDriveType = S
@@ -195,7 +196,7 @@ End Function
 '
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Function ShowFileAttr(File) ' File can be FileFolder or Folder
+Function ShowFileAttr(File) ' File kann Datei oder Ordner sein
 
 	Dim S 	
 	Dim Attr
@@ -207,19 +208,18 @@ Function ShowFileAttr(File) ' File can be FileFolder or Folder
 		Exit Function
 	End If
 
-	If Attr And FileAttrDirectory  Then S = S & "Folder "
-	If Attr And FileAttrReadOnly   Then S = S & "Readonly"
-	If Attr And FileAttrHidden     Then S = S & "Hidden"
+	If Attr And FileAttrDirectory  Then S = S & "Verzeichnis "
+	If Attr And FileAttrReadOnly   Then S = S & "Schreibgeschützt"
+	If Attr And FileAttrHidden     Then S = S & "Versteckt"
 	If Attr And FileAttrSystem     Then S = S & "System"
-	If Attr And FileAttrVolume     Then S = S & "Drive"
-	If Attr And FileAttrArchive    Then S = S & "Archive"
+	If Attr And FileAttrVolume     Then S = S & "Datenträger"
+	If Attr And FileAttrArchive    Then S = S & "Archiv"
 	If Attr And FileAttrAlias      Then S = S & "Alias"
-	If Attr And FileAttrCompressed Then S = S & "Compressed"
+	If Attr And FileAttrCompressed Then S = S & "Komprimiert"
 
 	ShowFileAttr = S
 
 End Function
-
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
@@ -260,24 +260,24 @@ Function GenerateDriveInformation(FSO)
 	S = "Anzahl der Laufwerke:" & TabStop & Drives.Count & NewLine & NewLine
 
 	' Erstellt die erste Zeile des Berichts.
-	S = S & String(2, TabStop) & "Drive" 
-	S = S & String(3, TabStop) & "File" 
+	S = S & String(2, TabStop) & "Laufwerk" 
+	S = S & String(3, TabStop) & "Datei" 
 	S = S & TabStop & "Gesamter"
 	S = S & TabStop & "Freier"
 	S = S & TabStop & "Verfügbarer"
 	S = S & TabStop & "Seriennummer" & NewLine
 
 	' Erstellt die zweite Zeile des Berichts.
-	S = S & "Drive Letter"
-	S = S & TabStop & "Path"
-	S = S & TabStop & "Type"
-	S = S & TabStop & "Ready ?"
+	S = S & "Laufwerkbuchstabe"
+	S = S & TabStop & "Pfad"
+	S = S & TabStop & "Typ"
+	S = S & TabStop & "Bereit ?"
 	S = S & TabStop & "Name"
 	S = S & TabStop & "System"
-	S = S & TabStop & "Memory"
-	S = S & TabStop & "Memory"
-	S = S & TabStop & "Memory"
-	S = S & TabStop & "Number" & NewLine	
+	S = S & TabStop & "Speicherplatz"
+	S = S & TabStop & "Speicherplatz"
+	S = S & TabStop & "Speicherplatz"
+	S = S & TabStop & "Nummer" & NewLine	
 
 	' Trennlinie.
 	S = S & String(105, "-") & NewLine
@@ -336,25 +336,25 @@ End Function
 Function GenerateFileInformation(File)
 
 	Dim S
-	S = NewLine & "Path:" & TabStop & File.Path
+
+	S = NewLine & "Pfad:" & TabStop & File.Path
 	S = S & NewLine & "Name:" & TabStop & File.Name
-	S = S & NewLine & "Type:" & TabStop & File.Type
+	S = S & NewLine & "Typ:" & TabStop & File.Type
 	S = S & NewLine & "Attribute:" & TabStop & ShowFileAttr(File)
-	S = S & NewLine & "Created:" & TabStop & File.DateCreated
-	S = S & NewLine & "Last Accessed:" & TabStop & File.DateLastAccessed
-	S = S & NewLine & "Last Modified:" & TabStop & File.DateLastModified
-	S = S & NewLine & "Size" & TabStop & File.Size & NewLine
+	S = S & NewLine & "Erstellt:" & TabStop & File.DateCreated
+	S = S & NewLine & "Letzter Zugriff:" & TabStop & File.DateLastAccessed
+	S = S & NewLine & "Letzte Änderung:" & TabStop & File.DateLastModified
+	S = S & NewLine & "Größe" & TabStop & File.Size & NewLine
 
 	GenerateFileInformation = S
 
 End Function
 
-
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
 ' GenerateFolderInformation
 '
-' Purpose:
+' Zweck:
 '
 ' Erstellt eine Zeichenfolge, die den aktuellen Status eines Ordners
 ' beschreibt.
@@ -373,7 +373,7 @@ End Function
 Function GenerateFolderInformation(Folder)
 
 	Dim S
-' @todo localize @loc
+
 	S = "Pfad:" & TabStop & Folder.Path
 	S = S & NewLine & "Name:" & TabStop & Folder.Name
 	S = S & NewLine & "Attribute:" & TabStop & ShowFileAttr(Folder)
@@ -411,14 +411,14 @@ Function GenerateAllFolderInformation(Folder)
 	Dim Files
 	Dim File
 
-	S = "Folder:" & TabStop & Folder.Path & NewLine & NewLine
+	S = "Ordner:" & TabStop & Folder.Path & NewLine & NewLine
 
 	Set Files = Folder.Files
 
 	If 1 = Files.Count Then
-		S = S & "Found 1 File" & NewLine
+		S = S & "Es ist 1 Datei vorhanden" & NewLine
 	Else
-		S = S & "" & Files.Count & " Files found" & NewLine
+		S = S & "Es sind " & Files.Count & "Dateien vorhanden" & NewLine
 	End If
 
 	If Files.Count <> 0 Then
@@ -432,9 +432,9 @@ Function GenerateAllFolderInformation(Folder)
 	Set SubFolders = Folder.SubFolders
 
 	If 1 = SubFolders.Count Then
-		S = S & NewLine & "1 Subdirectory found" & NewLine & NewLine
+		S = S & NewLine & "Es ist 1 Unterordner vorhanden" & NewLine & NewLine
 	Else
-		S = S & NewLine & "" & SubFolders.Count & " Subdirectories found" & NewLine & NewLine
+		S = S & NewLine & "Es sind" & SubFolders.Count & "Unterordner vorhanden" & NewLine & NewLine
 	End If
 
 	If SubFolders.Count <> 0 Then
@@ -455,61 +455,30 @@ Function GenerateAllFolderInformation(Folder)
 
 End Function
 
-
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'
-' CopyAllFolderFiles
-'
-' Zweck: 
-'
-' Kopiert den Ordner und alle darin enthaltenen Dateien und Unterordnern.
-' (Rekursiv)
-' 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-Function CopyAllFolderFiles(Folder, FSO, bForceRepl, bSkipOld, bSkipBAK, bSkipCVS)
-'FileSystemObject.CopyFile "c:\My Documents\Letters\*.doc", "c:\temp\"
-
+Function CopyAllFolderFiles(Folder, FSO, bForceRepl, bSkip, stSkippedItem)
+'FileSystemObject.CopyFile "c:\EigeneDateien\Briefe\*.doc", "c:\temp\"
 	Dim S
 	Dim SubFolders
 	Dim SubFolder
 	Dim Files
 	Dim File
-        'Dim Name
-        Dim NewName
-        Dim NewFile
-        Dim Proceed
-	Dim ProceedAll
+    'Dim Name
+    Dim NewName
+    Dim NewFile
+    Dim Proceed
 
-        ProceedAll = False
-        Proceed = False
+    Proceed = false
 'WScript.Echo Folder.Path '@debug
 
-	If bSkipOld Then
-' TODO @todo add Skips for BAK and CVS here, too (later)		
-		If Folder.Name = "Old" Then
-			' do Nothing (ProceedAll remains false)
-		Else
-			ProceedAll = True
-		End If
-	Else
-		ProceedAll = True
-	End If
-
-	If ProceedAll Then
-		S = "Folder:" & TabStop & Folder.Path '& NewLine & NewLine
+	S = "Ordner:" & TabStop & Folder.Path '& NewLine & NewLine
         'S= ""
 
 	Set Files = Folder.Files
 
 	If 1 = Files.Count Then
-			If gbDebug Then
-				S = S & NewLine & "1 File found" & NewLine
-			End If
+		'S = S & "Es ist 1 Datei vorhanden" & NewLine
 	Else
-			If gbDebug Then
-				S = S & NewLine & "" & Files.Count & " Files found" & NewLine
-			End If
+		'S = S & "Es sind " & Files.Count & "Dateien vorhanden" & NewLine
 	End If
 
 	If Files.Count <> 0 Then
@@ -517,7 +486,7 @@ Function CopyAllFolderFiles(Folder, FSO, bForceRepl, bSkipOld, bSkipBAK, bSkipCV
 		For Each File In Files
 			'S = S & GenerateFileInformation(File)
                         'Name = File.Path
-                        'NewName = TestTargetPath & Mid(Name, Len(TestFilePath)+1)
+                        'NewName = stTargetPath & Mid(Name, Len(stFilePath)+1)
                         NewName = ReplacePath(File)
 'WScript.Echo File.Path & " -> " & NewName
                         If FSO.FileExists(NewName) Then
@@ -526,33 +495,30 @@ Function CopyAllFolderFiles(Folder, FSO, bForceRepl, bSkipOld, bSkipBAK, bSkipCV
                                 ' @todo: Add functions / par for replace ReadOnly files !
                                 '        For now we DO replace them anyway
                                         NewFile.Attributes = NewFile.Attributes - FileAttrReadOnly
-                                        Proceed = True
+                                        Proceed = true
                                 End If
 
                                 ' @todo: Add functions / par for replace NEWER files only !
                                 '        For now we DO replace them if newer
                                 If NewFile.DateLastModified >= File.DateLastModified Then
-                                        Proceed = False
+                                        Proceed = false
                                 Else
-                                        Proceed = True
+                                        Proceed = true
                                 End If
                         Else
-                                Proceed = True
+                                Proceed = true
                         End If
 
                         If Proceed Then
 'WScript.Echo File.Path & " -> " & NewName
                                 If bForceRepl Then
 									If FSO.FileExists(NewName) Then FSO.DeleteFile NewName, true
-									File.Copy NewName, true
-                                Else
-									File.Copy NewName, true
-									'File.Copy TestTargetPath
 								End If
+								File.Copy NewName, true
                         End If
 
                         NewName = ""
-                        Proceed = False
+                        Proceed = false
 		Next
 
 	End If
@@ -560,69 +526,42 @@ Function CopyAllFolderFiles(Folder, FSO, bForceRepl, bSkipOld, bSkipBAK, bSkipCV
 	Set SubFolders = Folder.SubFolders
 
 	If 1 = SubFolders.Count Then
-			If gbDebug Then
-				S = S & NewLine & "1 Subdirectory found" & NewLine
-			End If
+		'S = S & NewLine & "Es ist 1 Subdirectory found" & NewLine & NewLine
 	Else
-			If gbDebug Then
-				S = S & NewLine & "" & SubFolders.Count & " Subdirectories found" & NewLine
-			End If
+		'S = S & NewLine & "Es sind" & SubFolders.Count & "Subdirectories found" & NewLine & NewLine
 	End If
 
 	If SubFolders.Count <> 0 Then
-
-		For Each SubFolder In SubFolders
-			'S = S & GenerateFolderInformation(SubFolder)
-	                        'CopyAllFolderFiles SubFolder, FSO, bForceRepl, bSkipOld, bSkipBAK, bSkipCVS
-                        S = S & NewLine
-                        S = S & "Folder:" & TabStop & SubFolder.Path
-		Next
-
 		'S = S & NewLine
 
 		For Each SubFolder In SubFolders
-                        NewName = ReplaceFolderPath(SubFolder)
-                        If FSO.FolderExists(NewName) Then
-			        'S = S & GenerateAllFolderInformation(SubFolder)
+			If (bSkip And SubFolder.Name = stSkippedItem) Then
+				' Do nothing
+			Else
+				'S = S & GenerateFolderInformation(SubFolder)
+				'CopyAllFolderFiles SubFolder, FSO, bForceRepl, false, ""
+
+				S = S & NewLine
+				S = S & "Ordner:" & TabStop & SubFolder.Path
+				
+				NewName = ReplaceFolderPath(SubFolder)
+				If FSO.FolderExists(NewName) Then
+				'S = S & GenerateAllFolderInformation(SubFolder)
 'WScript.Echo SubFolder.Path '@debug
-							If bForceRepl Then
-	'WScript.Echo "Repl for " & SubFolder.Path '@debug
-                                FSO.DeleteFolder NewName, true
-	                                'CopyAllFolderFiles SubFolder, FSO, bForceRepl, bSkipOld, bSkipBAK, bSkipCVS
-                                SubFolder.Copy(NewName)
-                            Else
-	'WScript.Echo "NO Repl for " & SubFolder.Path '@debug
-					CopyAllFolderFiles SubFolder, FSO, false, bSkipOld, bSkipBAK, bSkipCVS
-                            End If 
-                        Else
+					If bForceRepl Then
+						FSO.DeleteFolder NewName, true
+						'CopyAllFolderFiles SubFolder, FSO, bForceRepl, false, ""
+						SubFolder.Copy(NewName)
+					Else
+						CopyAllFolderFiles SubFolder, FSO, false, false, ""
+					End If 
+				Else
 'WScript.Echo SubFolder.Path '@debug
-	'WScript.Echo SubFolder.Name '@debug
-	'WScript.Echo NewName '@debug
-				    If bSkipOld Then
-				    	If Not (SubFolder.Name = "OLD" Or SubFolder.Name = "Old" Or SubFolder.Name = "old" Or SubFolder.Name = "_old") Then
-				    		If bSkipBAK Then
-				    			If Not (SubFolder.Name = "BAK" Or SubFolder.Name = "Bak" Or SubFolder.Name = "bak") Then
-				    				SubFolder.Copy(NewName)
-				    			End If	
-				    		Else
-				    			If bSkipCVS Then
-				    				If Not (SubFolder.Name = "CVS") Then 'here only UPPERCASE (used by CVS)
-                                SubFolder.Copy(NewName)
-                        End If
-				    			Else
-				    				SubFolder.Copy(NewName)
-				    			End If
-				    		End If			    	
-				    	End If
-				    Else
-	                            	SubFolder.Copy(NewName)
-	                            End If	                            
-	                        End If
+						SubFolder.Copy(NewName)
+				End If
+			End If
 		Next
 
-	End If
-	Else
-		S = ""		
 	End If
 
 	CopyAllFolderFiles = S
@@ -633,7 +572,7 @@ Private Function ReplaceFilePath(File)
         Dim NewName
 
         Name = File.Path
-        NewName = TestTargetPath & Mid(Name, Len(TestFilePath)+1)
+        NewName = stTargetPath & Mid(Name, Len(stFilePath)+1)
         ReplaceFilePath = NewName
 End Function
 
@@ -647,18 +586,18 @@ Private Function ReplaceFolderPath(Folder)
         Dim NewName
 
         Name = Folder.Path
-        NewName = TestTargetPath & Mid(Name, Len(TestFilePath)+1)
+        NewName = stTargetPath & Mid(Name, Len(stFilePath)+1)
         ReplaceFolderPath = NewName
 End Function
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
-' GenerateResult
+' GenerateCopyInformation
 '
 ' Zweck: 
 '
-' Erstellt eine Zeichenfolge, die den aktuellen Status des Ordners
-' C:\Test mit allen Dateien und Unterordnern beschreibt.
+' Erstellt eine Zeichenfolge, die den aktuellen Status des Ziel-Ordners
+' mit allen Dateien und Unterordnern beschreibt.
 '
 ' Zeigt Folgendes 
 '
@@ -668,56 +607,55 @@ End Function
 '
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Function GenerateResult(FSO, WshShell, bForceReplace, bSkipOld, bSkipBAK, bSkipCVS)
+Function GenerateCopyInformation(FSO, WshShell, bForceReplace, bSkip, stSkippedItem)
 'On Error Resume Next
-	Dim TestFolder
+	Dim SourceFolder
     Dim TargetFolder
 	Dim s
 
-	If TestDrive <> "\" Then
-		If Not FSO.DriveExists(TestDrive) Then 
-			s = "Source Drive (" & TestDrive & ") is not ready."
+	If stDrive <> "\" Then
+		If Not FSO.DriveExists(stDrive) Then 
+			s = "Source drive (" & stDrive & ") is not ready."
 			'WScript.Echo s
 			WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconStop
 			Exit Function
 		End If
 	End If
-	If TestTargetDrive <> "\" Then
-		If Not FSO.DriveExists(TestTargetDrive) Then			
-			s = "Target Drive (" & TestTargetDrive & ") is not ready."
+	If stTargetDrive <> "\" Then
+		If Not FSO.DriveExists(stTargetDrive) Then			
+			s = "Target drive (" & stTargetDrive & ") is not ready."
 			'WScript.Echo s
 			WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconStop
 			Exit Function
 		End If
 	End If
-	If Not FSO.FolderExists(TestFilePath) Then
+	If Not FSO.FolderExists(stFilePath) Then
 		s = "Source Drive does not exist."
 		'WScript.Echo s
 		WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconExclamation
 		Exit Function
 	End If
 	
-	Set TestFolder = FSO.GetFolder(TestFilePath)
-        If Not FSO.FolderExists(TestTargetPath) Then
-                Set TargetFolder = FSO.CreateFolder(TestTargetPath)
+	Set SourceFolder = FSO.GetFolder(stFilePath)
+        If Not FSO.FolderExists(stTargetPath) Then
+                Set TargetFolder = FSO.CreateFolder(stTargetPath)
         Else
-                Set TargetFolder = FSO.GetFolder(TestTargetPath)
+                Set TargetFolder = FSO.GetFolder(stTargetPath)
         End If
     If Err.Number <> 0 Then
-		WScript.Echo "Error " & Err.Number & ": " & Err.Description
+		WScript.Echo "Fehler " & Err.Number & ": " & Err.Description
 		Exit Function		
 		'Err.Clear
     End If
     
-	'GenerateResult = GenerateAllFolderInformation(TestFolder)
-        GenerateResult = CopyAllFolderFiles(TestFolder, FSO, bForceReplace, bSkipOld, bSkipBAK, bSkipCVS)
-'WScript.Echo TestFolder.Path & " -> " & TestTargetPath & "\"
-        'FSO.CopyFolder TestFolder.Path, TestTargetPath & "\"
+	'GenerateCopyInformation = GenerateAllFolderInformation(SourceFolder)
+        GenerateCopyInformation = CopyAllFolderFiles(SourceFolder, FSO, bForceReplace, bSkip, stSkippedItem)
+'WScript.Echo SourceFolder.Path & " -> " & stTargetPath & "\"
+        'FSO.CopyFolder SourceFolder.Path, stTargetPath & "\"
 	Exit Function
 
 'GenerateTestInformation_Err:	
 End Function
-
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
@@ -738,37 +676,35 @@ End Function
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Sub DeleteTestDirectory(FSO)
-
-	Dim TestFolder
+	Dim SourceFolder
 	Dim SubFolder
 	Dim File
 
 	' Zwei Möglichkeiten, eine Datei zu löschen:
 
-	FSO.DeleteFile(TestFilePath & "\Phish\BathtubGin.txt")
+	FSO.DeleteFile(stFilePath & "\Phish\BathtubGin.txt")
 
-	Set File = FSO.GetFile(TestFilePath & "\Phish\LawnBoy.txt")
+	Set File = FSO.GetFile(stFilePath & "\Phish\LawnBoy.txt")
 	File.Delete
 
 
 
 	' Zwei Möglichkeiten, einen Ordner zu löschen:
 
-	FSO.DeleteFolder(TestFilePath & "\Phish")
+	FSO.DeleteFolder(stFilePath & "\Phish")
 
-	FSO.DeleteFile(TestFilePath & "\Readme.txt")
+	FSO.DeleteFile(stFilePath & "\Liesmich.txt")
 
-	Set TestFolder = FSO.GetFolder(TestFilePath)
-	TestFolder.Delete
-
+	Set SourceFolder = FSO.GetFolder(stFilePath)
+	SourceFolder.Delete
 End Sub
-
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
 ' BuildTestDirectory
 '
-' Zweck:
+' @Deprecated: unused
+' Purpose:
 '
 ' Erstellt eine Verzeichnishierarchie, um FileSystemObject zu
 ' beschreiben.
@@ -796,50 +732,46 @@ End Sub
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Function BuildTestDirectory(FSO)
-	
-	Dim TestFolder
+	Dim SourceFolder
 	Dim SubFolders
 	Dim SubFolder
 	Dim TextStream
 
 	' Bricht ab, wenn (a) das Laufwerk nicht vorhanden oder (b) das zu erstellende Verzeichnis bereits vorhanden ist.
 
-	If Not FSO.DriveExists(TestDrive) Then
-		BuildTestDirectory = False
+	If Not FSO.DriveExists(stDrive) Then
+		BuildTestDirectory = false
 		Exit Function
 	End If
 
-	If FSO.FolderExists(TestFilePath) Then
-		BuildTestDirectory = False
+	If FSO.FolderExists(stFilePath) Then
+		BuildTestDirectory = false
 		Exit Function
 	End If
 
-	Set TestFolder = FSO.CreateFolder(TestFilePath)
+	Set SourceFolder = FSO.CreateFolder(stFilePath)
 
-	Set TextStream = FSO.CreateTextFile(TestFilePath & "\Readme.txt")
+	Set TextStream = FSO.CreateTextFile(stFilePath & "\Readme.txt")
 	TextStream.writeLine("My Music")
 	TextStream.Close
 
-	Set SubFolders = TestFolder.SubFolders
+	Set SubFolders = SourceFolder.SubFolders
 
 	Set SubFolder = SubFolders.Add("Phish")
 
 	'CreateLyrics SubFolder	
 
-	BuildTestDirectory = True
-
+	BuildTestDirectory = true
 End Function
-
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
-' Die Hauptroutine
+' The main routine
 '
-' Zunächst wird ein Testverzeichnis mit einigen Unterordnern und
+' Zunächst wird ein Zielverzeichnis mit einigen Unterordnern und
 ' Dateien erstellt.
 ' Anschließend werden Informationen über die verfügbaren
-' Festplattenlaufwerke sowie das Testverzeichnis erstellt und danach
-' alles wieder entfernt.
+' Festplattenlaufwerke sowie das Testverzeichnis erstellt.
 '
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -849,72 +781,71 @@ Sub Main ()
 	
 	Dim objArgs
 	Dim s
-	Dim I
+	Dim i
 	Dim iShow
 	Dim bKeep
 	Dim bForceReplace
-	Dim bSkipOld 'TODO @todo use Array (skipList) if that works to dim in VBScript?
-	Dim bSkipBAK
-	Dim bSkipCVS
-	
-	' Einrichten globaler Daten.
-	TabStop = Chr(9)
-	NewLine = Chr(10)
-	gbDebug = false
+	Dim bSkip
+	Dim stSkippedItem
 	
 	iShow = ShowResultNone
 	bKeep = false
 	bForceReplace = false
+	bSkip = false
 	
-	bSkipOld = false
-	bSkipBAK = false
-	bSkipCVS = false
+	' Set Pseudo-Constants (values that cannot be declared const for some reason)
+	TabStop = Chr(9)
+	NewLine = Chr(10)
 	
 	Set WshShell = Wscript.CreateObject("Wscript.Shell")
 	Set FSO = CreateObject("Scripting.FileSystemObject")
 
 	Set objArgs = Wscript.Arguments
-	For I = 0 to objArgs.Count - 1
-          'Wscript.Echo objArgs(I)
-          If I=0 Then 
-			If objArgs(I) = "-info" Then
+	For i = 0 to objArgs.Count - 1
+          'Wscript.Echo objArgs(i)
+          If i=0 Then 
+          	If objArgs(i) = "-info" Then
 				iShow = ShowResultInfo
 				bKeep = true
 			Else
-				s = objArgs(I)
-				TestFilePath = objArgs(I)
+				s = objArgs(i)
+				stFilePath = objArgs(i)
 			End If
-		  ElseIf I=1 Then
-			If objArgs(I) = "-info" Then
+		  ElseIf i=1 Then
+		  	If objArgs(i) = "-info" Then
 				iShow = ShowResultInfo
 				bKeep = true
-			Else			
-				s = s & NewLine & objArgs(I)
-				TestTargetPath = objArgs(I)
+			Else
+				s = s & NewLine & objArgs(i)
+				stTargetPath = objArgs(i)
 			End If
           Else
-			If objArgs(I) = "-test" Then 
+			If objArgs(i) = "-test" Then 
 			 	iShow = ShowResultAll
-			ElseIf objArgs(I) = "-paths" Then 
+			ElseIf objArgs(i) = "-paths" Then 
 				iShow = ShowResultStart
-			ElseIf objArgs(I) = "-result" Then
+			ElseIf objArgs(i) = "-result" Then
 				iShow = ShowResultFinal
-			ElseIf objArgs(I) = "-keepresult" Then 'TODO use Uppercase R? (or both for existing links!)
+			ElseIf objArgs(i) = "-keepresult" Then
 				iShow = ShowResultFinal
 				bKeep = true
-			ElseIf objArgs(I) = "-forcereplace" Then 'TODO use Uppercase R? (or both for existing links!)
+			ElseIf objArgs(i) = "-forcereplace" Then 
 ' Forcing an explicit REPLACE of existing Folders (for Backup on certain media like DVD-RAM)
 				bForceReplace = true
-			ElseIf objArgs(I) = "-skipold" Then 'TODO use Uppercase O?
-				bSkipOld = true
-			ElseIf objArgs(I) = "-skipbak" Then 'TODO use Uppercase B or all BAK?
-				bSkipBAK = true
-			ElseIf objArgs(I) = "-skipcvs" Then 'TODO use Uppercase C or all CVS?
-				bSkipCVS = true
-			ElseIf objArgs(I) = "-debug" Then
-				gbDebug = true
+			ElseIf objArgs(i) = "-skip" Then
+				bSkip = true
+			ElseIf objArgs(i) = "-skipFolder" Then
+				bSkip = true
 			Else
-				s = s + NewLine + objArgs(I)
+				If (bSkip) Then
+					If stSkippedItem = "" Then
+						stSkippedItem = objArgs(i)
+					Else
+						s = s & NewLine & objArgs(i)
+					End If
+				Else
+					s = s & NewLine & objArgs(i)
+				End If
 			End If
 		  End If			
 	Next
@@ -925,57 +856,57 @@ Sub Main ()
 			If bKeep Then
 				WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
 			Else
-				s = s & NewLine & NewLine & "(Finished in 15 Seconds)"
+				s = s & NewLine & NewLine & "(Finished in " & DelayDuration & " seconds)"
 				WshShell.Popup s, 15, AppTitle, PopUpButtonOK + PopUpIconInfo
-			End If
-		
+			End If		
 		Exit Sub
 	Else
 		If iShow = ShowResultAll Or iShow = ShowResultStart Then 
 			'WScript.Echo s
-			s = s & NewLine & NewLine & "(Continues in 5 Seconds)"
+			s = s & NewLine & NewLine & "(Continues in " & DelayDuration & " seconds)"
 			'if bKeep Then
 			'	WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
 			'Else
-				WshShell.Popup s, 5, AppTitle, PopUpButtonOK + PopUpIconInfo
+				WshShell.Popup s, DelayDuration, AppTitle, PopUpButtonOK + PopUpIconInfo
 			'End If
 		End If
-		
-		s = ""
-		
-		TestDrive = Left(TestFilePath,1)
-		TestTargetDrive = Left(TestTargetPath,1)
-		
-	'Wscript.Echo pars
+	End If
+	s = ""
 	
-		'If Not BuildTestDirectory(FSO) Then
-		'	Wscript.Echo "Test folder cannot be created or may already exist. Unable to proceed."
-		'	Exit Sub
-	'    Else
-		'	Wscript.Echo "Test folder successfully created."
-		'End If
+	stDrive = Left(stFilePath, 1)
+	stTargetDrive = Left(stTargetPath, 1)
 	
-		'Wscript.Echo GenerateDriveInformation(FSO) & NewLine & NewLine
-	
-	s = GenerateResult(FSO, WshShell, bForceReplace, bSkipOld, bSkipBAK, bSkipCVS) ' & NewLine & NewLine
-		If iShow = ShowResultAll Or iShow = ShowResultFinal Then 
-			If Len(s)>0 Then 					
-				s = "Copy succeeded." & NewLine & s
-				'WScript.Echo s
-				if bKeep Then
-					WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
-				Else
-					s = s & NewLine & NewLine & "(Finished in 15 Seconds)"
-					WshShell.Popup s, 15, AppTitle, PopUpButtonOK + PopUpIconInfo
-				End If
+'Wscript.Echo pars
+
+	'If Not BuildTestDirectory(FSO) Then
+	'	Wscript.Echo "Test folder cannot be created or already exists. Cannot continue."
+	'	Exit Sub
+'    Else
+	'	Wscript.Echo "Test folder created succesfully."
+	'End If
+
+	'Wscript.Echo GenerateDriveInformation(FSO) & NewLine & NewLine
+
+	s=GenerateCopyInformation(FSO, WshShell, bForceReplace, bSkip, stSkippedItem) ' & NewLine & NewLine
+	If iShow = ShowResultAll Or iShow = ShowResultFinal Then 
+		If Len(s)>0 Then 					
+			s = "Copy succeeded." & NewLine & s
+			If (bSkip And stSkippedItem <> "") Then
+				s = s & NewLine & "Skipped: " & stSkippedItem
+			End If
+			'WScript.Echo s
+			If bKeep Then
+				WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
+			Else
+				s = s & NewLine & NewLine & "(Ende nach " & MessageDisplayDuration & " Sekunden)"
+				WshShell.Popup s, MessageDisplayDuration, AppTitle, PopUpButtonOK + PopUpIconInfo
 			End If
 		End If
-	
-		'Print GetLyrics(FSO) & NewLine & NewLine
-	
-		'DeleteTestDirectory(FSO)
 	End If
-End Sub
 
+	'Print GetLyrics(FSO) & NewLine & NewLine
+
+	'DeleteTestDirectory(FSO)
+End Sub
 
 '--------------------------------------------------------------------------------
