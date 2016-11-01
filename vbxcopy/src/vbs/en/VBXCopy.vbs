@@ -6,9 +6,9 @@
 '
 ' VBXCopy
 '
-' Version 1.0.11
+' Version 1.0.12
 '
-' Copyright 1999-2010 Creative Arts & Technologies. All Rights reserved.
+' Copyright 1999-2016 Creative Arts & Technologies. All Rights reserved.
 '
 ' Parts Copyright 1999-2000 Survey Computing. Alle Rechte vorbehalten.
 ' Parts Copyright 1998 Microsoft Corporation. Alle Rechte vorbehalten.
@@ -54,7 +54,7 @@ Option Explicit
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Const AppTitle = "VBXCopy"
-Const AppVersion = "1.0.11"
+Const AppVersion = "1.0.12"
 Const AppLanguage = "en"
 
 Dim gbDebug

@@ -4,7 +4,7 @@
 'which provides most features of the Windows/DOS command "XCopy" 
 'plus useful enhancements for file synchronization and backup.
 '
-'Copyright © 1999-2007 Creative Arts & Technologies
+'Copyright © 1999-2016 Creative Arts & Technologies
 '
 'You can redistribute it and/or modify it under the terms of the
 'Shared Source License as published by Creative Arts & Technologies
@@ -28,15 +28,14 @@
 'along with this program; if not, write to Creative Arts & Technologies
 'at info@catmedia.us
 '
-'Creative Arts & Technologies
-'15, Wyvern Estate
-'1-3 Beverly Way
-'New Malden
-'KT3 4PH, England, UK
+'Creative Arts & Technologies Ltd. & Co. KG 
+'Amalienstr. 71 
+'D-80799 München 
+'Germany
 '
-'CATMedia US
-'3030 Edwin Ave., Apt. 4D
-'7024  Fort Lee, NJ
+'Complementary: 
+'Creative Arts & Technologies Ltd.
+'Companies House Nr. 9724030 
 '
 'e-mail: info@catmedia.us
 'WWW: http://www.catmedia.us/
