@@ -1,17 +1,17 @@
 '--------------------------------------------------------------------------------
-' $Id: VBXCopy.vbs,v 1.9 2010/02/07 23:02:41 keilw Exp $
+' $Id: VBXCopy.vbs,v 1.0.13 2016/11/02 00:43:20 keilw Exp $
 '--------------------------------------------------------------------------------
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
 ' VBXCopy
 '
-' Version 1.0.12
+' Version 1.0.13
 '
 ' Copyright 1999-2016 Creative Arts & Technologies. All Rights reserved.
 '
-' Parts Copyright 1999-2000 Survey Computing. Alle Rechte vorbehalten.
-' Parts Copyright 1998 Microsoft Corporation. Alle Rechte vorbehalten.
+' Parts Copyright 1999-2000 Survey Computing. All Rights reserved.
+' Parts Copyright 1998 Microsoft Corporation. All Rights reserved.
 ' 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -44,31 +44,35 @@ Option Explicit
 '    nach verwendetem Dateisystemen unterschiedlich. Verwenden Sie in
 '    Ihrem Produktcode On Error Resume Next sowie das Error-Objekt,
 '    um mögliche Fehler aufzufangen.
+'
+' 4) Lokalisierung: Abfrage des Betriebssystems und der Sprache und damit
+'    verbundene Anzeige alternativer Meldungstexte in dieser Sprache 
+'    (Default=EN)
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
-' Global Variables
+' Einige hilfreiche globale Variablen
 '
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Const AppTitle = "VBXCopy"
-Const AppVersion = "1.0.12"
+Const AppVersion = "1.0.13"
 Const AppLanguage = "en"
 
 Dim gbDebug
 Dim TabStop
 Dim NewLine
 
-Dim TestDrive
-Dim TestFilePath
-Dim TestTargetPath
-Dim TestTargetDrive
+Dim stDrive
+Dim stFilePath
+Dim stTargetPath
+Dim stTargetDrive
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
-' Drive.DriveType Values
+'  Drive.DriveType Values
 '
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -104,7 +108,6 @@ Const OpenFileForReading = 1
 Const OpenFileForWriting = 2 
 Const OpenFileForAppending = 8 
 
-
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
 ' PopUp Constants for Messages
@@ -123,7 +126,6 @@ Const PopUpIconQuestion = 32 'Show Question Mark icon
 Const PopUpIconExclamation = 48 'Show Exclamation Mark icon 
 Const PopUpIconInfo = 64 'Show Information Mark icon 
 
-
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
 ' Result and Error Constants
@@ -137,16 +139,25 @@ Const ShowResultFinal = 3
 Const ShowResultErrors = 4
 Const ShowResultInfo = 5
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'
+' Global App Constants
+'
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+' Display-/Pause time(s)
+Const DelayDuration = 5
+Const MessageDisplayDuration = 15
+
 'Dim pars
 
-Main()
 Main()
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '
 ' ShowDriveType
 '
-' Zweck: 
+' Purpose: 
 '
 ' Erstellt eine Zeichenfolge, die den Laufwerkstyp eines angegebenen
 ' Drive-Objekts beschreibt.
@@ -163,17 +174,17 @@ Function ShowDriveType(Drive)
 	
 	Select Case Drive.DriveType
 	Case DriveTypeRemovable
-		S = "Wechselmedium"
+		S = "Removable drive"
 	Case DriveTypeFixed
-		S = "Fest"
+		S = "Fixed"
 	Case DriveTypeNetwork
-		S = "Netzwerk"
+		S = "Network"
 	Case DriveTypeCDROM
 		S = "CD-ROM"
 	Case DriveTypeRAMDisk
-		S = "RAM-Laufwerk"
+		S = "RAM-Drive"
 	Case Else
-		S = "Unbekannt"
+		S = "Unknown"
 	End Select
 
 	ShowDriveType = S
@@ -184,7 +195,7 @@ End Function
 '
 ' ShowFileAttr
 '
-' Zweck: 
+' Purpose: 
 '
 ' Erstellt eine Zeichenfolge, die Datei- oder Ordnerattribute
 ' beschreibt.
@@ -196,7 +207,7 @@ End Function
 '
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Function ShowFileAttr(File) ' File kann Datei oder Ordner sein
+Function ShowFileAttr(File) ' File can be file or folder
 
 	Dim S 	
 	Dim Attr
@@ -208,14 +219,14 @@ Function ShowFileAttr(File) ' File kann Datei oder Ordner sein
 		Exit Function
 	End If
 
-	If Attr And FileAttrDirectory  Then S = S & "Verzeichnis "
-	If Attr And FileAttrReadOnly   Then S = S & "Schreibgeschützt"
-	If Attr And FileAttrHidden     Then S = S & "Versteckt"
+	If Attr And FileAttrDirectory  Then S = S & "Folder "
+	If Attr And FileAttrReadOnly   Then S = S & "Write protected"
+	If Attr And FileAttrHidden     Then S = S & "Hidden"
 	If Attr And FileAttrSystem     Then S = S & "System"
-	If Attr And FileAttrVolume     Then S = S & "Datenträger"
-	If Attr And FileAttrArchive    Then S = S & "Archiv"
+	If Attr And FileAttrVolume     Then S = S & "Drive"
+	If Attr And FileAttrArchive    Then S = S & "Archive"
 	If Attr And FileAttrAlias      Then S = S & "Alias"
-	If Attr And FileAttrCompressed Then S = S & "Komprimiert"
+	If Attr And FileAttrCompressed Then S = S & "Compressed"
 
 	ShowFileAttr = S
 
@@ -225,7 +236,7 @@ End Function
 '
 ' GenerateDriveInformation
 '
-' Zweck: 
+' Purpose: 
 '
 ' Erstellt eine Zeichenfolge, die den aktuellen Status der verfügbaren
 ' Laufwerke beschreibt.
@@ -260,26 +271,26 @@ Function GenerateDriveInformation(FSO)
 	S = "Anzahl der Laufwerke:" & TabStop & Drives.Count & NewLine & NewLine
 
 	' Erstellt die erste Zeile des Berichts.
-	S = S & String(2, TabStop) & "Laufwerk" 
-	S = S & String(3, TabStop) & "Datei" 
-	S = S & TabStop & "Gesamter"
-	S = S & TabStop & "Freier"
-	S = S & TabStop & "Verfügbarer"
-	S = S & TabStop & "Seriennummer" & NewLine
+	S = S & String(2, TabStop) & "Drive" 
+	S = S & String(3, TabStop) & "File" 
+	S = S & TabStop & "All"
+	S = S & TabStop & "Free"
+	S = S & TabStop & "Available"
+	S = S & TabStop & "Serial number" & NewLine
 
 	' Erstellt die zweite Zeile des Berichts.
-	S = S & "Laufwerkbuchstabe"
-	S = S & TabStop & "Pfad"
-	S = S & TabStop & "Typ"
-	S = S & TabStop & "Bereit ?"
+	S = S & "Drive letter"
+	S = S & TabStop & "Path"
+	S = S & TabStop & "Type"
+	S = S & TabStop & "Ready ?"
 	S = S & TabStop & "Name"
 	S = S & TabStop & "System"
-	S = S & TabStop & "Speicherplatz"
-	S = S & TabStop & "Speicherplatz"
-	S = S & TabStop & "Speicherplatz"
-	S = S & TabStop & "Nummer" & NewLine	
+	S = S & TabStop & "Disk space"
+	S = S & TabStop & "Disk space"
+	S = S & TabStop & "Disk space"
+	S = S & TabStop & "Number" & NewLine	
 
-	' Trennlinie.
+	' Separator.
 	S = S & String(105, "-") & NewLine
 
 	For Each Drive In Drives
@@ -316,7 +327,7 @@ End Function
 '
 ' GenerateFileInformation
 '
-' Zweck: 
+' Purpose: 
 '
 ' Erstellt eine Zeichenfolge, die den aktuellen Status einer Datei
 ' beschreibt.
@@ -339,12 +350,12 @@ Function GenerateFileInformation(File)
 
 	S = NewLine & "Pfad:" & TabStop & File.Path
 	S = S & NewLine & "Name:" & TabStop & File.Name
-	S = S & NewLine & "Typ:" & TabStop & File.Type
-	S = S & NewLine & "Attribute:" & TabStop & ShowFileAttr(File)
-	S = S & NewLine & "Erstellt:" & TabStop & File.DateCreated
-	S = S & NewLine & "Letzter Zugriff:" & TabStop & File.DateLastAccessed
-	S = S & NewLine & "Letzte Änderung:" & TabStop & File.DateLastModified
-	S = S & NewLine & "Größe" & TabStop & File.Size & NewLine
+	S = S & NewLine & "Type:" & TabStop & File.Type
+	S = S & NewLine & "Attributes:" & TabStop & ShowFileAttr(File)
+	S = S & NewLine & "Created:" & TabStop & File.DateCreated
+	S = S & NewLine & "Last Access:" & TabStop & File.DateLastAccessed
+	S = S & NewLine & "Last Changed:" & TabStop & File.DateLastModified
+	S = S & NewLine & "Size" & TabStop & File.Size & NewLine
 
 	GenerateFileInformation = S
 
@@ -354,7 +365,7 @@ End Function
 '
 ' GenerateFolderInformation
 '
-' Zweck:
+' Purpose:
 '
 ' Erstellt eine Zeichenfolge, die den aktuellen Status eines Ordners
 ' beschreibt.
@@ -376,11 +387,11 @@ Function GenerateFolderInformation(Folder)
 
 	S = "Pfad:" & TabStop & Folder.Path
 	S = S & NewLine & "Name:" & TabStop & Folder.Name
-	S = S & NewLine & "Attribute:" & TabStop & ShowFileAttr(Folder)
-	S = S & NewLine & "Erstellt:" & TabStop & Folder.DateCreated
-	S = S & NewLine & "Letzter Zugriff:" & TabStop & Folder.DateLastAccessed
-	S = S & NewLine & "Letzte Änderung:" & TabStop & Folder.DateLastModified
-	S = S & NewLine & "Größe:" & TabStop & Folder.Size & NewLine
+	S = S & NewLine & "Attributes:" & TabStop & ShowFileAttr(Folder)
+	S = S & NewLine & "Created:" & TabStop & Folder.DateCreated
+	S = S & NewLine & "Last Access:" & TabStop & Folder.DateLastAccessed
+	S = S & NewLine & "Last Changed:" & TabStop & Folder.DateLastModified
+	S = S & NewLine & "Size:" & TabStop & Folder.Size & NewLine
 
 	GenerateFolderInformation = S
 
@@ -390,7 +401,7 @@ End Function
 '
 ' GenerateAllFolderInformation
 '
-' Zweck: 
+' Purpose: 
 '
 ' Erstellt eine Zeichenfolge, die den aktuellen Status eines Ordners mit
 ' allen Dateien und Unterordnern beschreibt.
@@ -411,7 +422,7 @@ Function GenerateAllFolderInformation(Folder)
 	Dim Files
 	Dim File
 
-	S = "Ordner:" & TabStop & Folder.Path & NewLine & NewLine
+	S = "Folder:" & TabStop & Folder.Path & NewLine & NewLine
 
 	Set Files = Folder.Files
 
@@ -470,7 +481,7 @@ Function CopyAllFolderFiles(Folder, FSO, bForceRepl, bSkip, stSkippedItem)
     Proceed = false
 'WScript.Echo Folder.Path '@debug
 
-	S = "Ordner:" & TabStop & Folder.Path '& NewLine & NewLine
+	S = "Folder:" & TabStop & Folder.Path '& NewLine & NewLine
         'S= ""
 
 	Set Files = Folder.Files
@@ -526,9 +537,9 @@ Function CopyAllFolderFiles(Folder, FSO, bForceRepl, bSkip, stSkippedItem)
 	Set SubFolders = Folder.SubFolders
 
 	If 1 = SubFolders.Count Then
-		'S = S & NewLine & "Es ist 1 Subdirectory found" & NewLine & NewLine
+		'S = S & NewLine & "There is 1 sub directory" & NewLine & NewLine
 	Else
-		'S = S & NewLine & "Es sind" & SubFolders.Count & "Subdirectories found" & NewLine & NewLine
+		'S = S & NewLine & "There are" & SubFolders.Count & "sub directories" & NewLine & NewLine
 	End If
 
 	If SubFolders.Count <> 0 Then
@@ -542,7 +553,7 @@ Function CopyAllFolderFiles(Folder, FSO, bForceRepl, bSkip, stSkippedItem)
 				'CopyAllFolderFiles SubFolder, FSO, bForceRepl, false, ""
 
 				S = S & NewLine
-				S = S & "Ordner:" & TabStop & SubFolder.Path
+				S = S & "Folder:" & TabStop & SubFolder.Path
 				
 				NewName = ReplaceFolderPath(SubFolder)
 				If FSO.FolderExists(NewName) Then
@@ -594,7 +605,7 @@ End Function
 '
 ' GenerateCopyInformation
 '
-' Zweck: 
+' Purpose: 
 '
 ' Erstellt eine Zeichenfolge, die den aktuellen Status des Ziel-Ordners
 ' mit allen Dateien und Unterordnern beschreibt.
@@ -630,7 +641,7 @@ Function GenerateCopyInformation(FSO, WshShell, bForceReplace, bSkip, stSkippedI
 		End If
 	End If
 	If Not FSO.FolderExists(stFilePath) Then
-		s = "Source Drive does not exist."
+		s = "Source folder does not exist."
 		'WScript.Echo s
 		WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconExclamation
 		Exit Function
@@ -643,7 +654,7 @@ Function GenerateCopyInformation(FSO, WshShell, bForceReplace, bSkip, stSkippedI
                 Set TargetFolder = FSO.GetFolder(stTargetPath)
         End If
     If Err.Number <> 0 Then
-		WScript.Echo "Fehler " & Err.Number & ": " & Err.Description
+		WScript.Echo "Error " & Err.Number & ": " & Err.Description
 		Exit Function		
 		'Err.Clear
     End If
@@ -689,11 +700,11 @@ Sub DeleteTestDirectory(FSO)
 
 
 
-	' Zwei Möglichkeiten, einen Ordner zu löschen:
+	' Two ways to delete a folder:
 
 	FSO.DeleteFolder(stFilePath & "\Phish")
 
-	FSO.DeleteFile(stFilePath & "\Liesmich.txt")
+	FSO.DeleteFile(stFilePath & "\Readme.txt")
 
 	Set SourceFolder = FSO.GetFolder(stFilePath)
 	SourceFolder.Delete
@@ -712,13 +723,13 @@ End Sub
 ' Die Hierarchie wird in dieser Reihenfolge erstellt:
 '
 ' C:\Test
-' C:\Test\Liesmich.txt
+' C:\Test\Readme.txt
 ' C:\Test\Phish
 ' C:\Test\Phish\BathtubGin.txt
 ' C:\Test\Phish\LawnBoy.txt
 '
 '
-' Zeigt Folgendes 
+' Shows 
 '
 ' - FileSystemObject.DriveExists
 ' - FileSystemObject.FolderExists
@@ -856,14 +867,14 @@ Sub Main ()
 			If bKeep Then
 				WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
 			Else
-				s = s & NewLine & NewLine & "(Finished in " & DelayDuration & " seconds)"
+				s = s & NewLine & NewLine & "(Finished in " & DelayDuration & " Sekunden)"
 				WshShell.Popup s, 15, AppTitle, PopUpButtonOK + PopUpIconInfo
 			End If		
 		Exit Sub
 	Else
 		If iShow = ShowResultAll Or iShow = ShowResultStart Then 
 			'WScript.Echo s
-			s = s & NewLine & NewLine & "(Continues in " & DelayDuration & " seconds)"
+			s = s & NewLine & NewLine & "(Continues in " & DelayDuration & " Sekunden)"
 			'if bKeep Then
 			'	WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
 			'Else

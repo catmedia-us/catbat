@@ -58,7 +58,7 @@ Option Explicit
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Const AppTitle = "VBXCopy"
-Const AppVersion = "1.0.12"
+Const AppVersion = "1.0.13"
 Const AppLanguage = "de"
 
 Dim gbDebug
