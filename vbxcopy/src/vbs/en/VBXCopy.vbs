@@ -6,7 +6,7 @@
 '
 ' VBXCopy
 '
-' Version 1.0.13
+' Version 1.0.14
 '
 ' Copyright 1999-2016 Creative Arts & Technologies. All Rights reserved.
 '
@@ -867,14 +867,14 @@ Sub Main ()
 			If bKeep Then
 				WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
 			Else
-				s = s & NewLine & NewLine & "(Finished in " & DelayDuration & " Sekunden)"
+				s = s & NewLine & NewLine & "(Closing in " & DelayDuration & " seconds)"
 				WshShell.Popup s, 15, AppTitle, PopUpButtonOK + PopUpIconInfo
 			End If		
 		Exit Sub
 	Else
 		If iShow = ShowResultAll Or iShow = ShowResultStart Then 
 			'WScript.Echo s
-			s = s & NewLine & NewLine & "(Continues in " & DelayDuration & " Sekunden)"
+			s = s & NewLine & NewLine & "(Continues in " & DelayDuration & " seconds)"
 			'if bKeep Then
 			'	WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
 			'Else
@@ -909,7 +909,7 @@ Sub Main ()
 			If bKeep Then
 				WshShell.Popup s, , AppTitle, PopUpButtonOK + PopUpIconInfo
 			Else
-				s = s & NewLine & NewLine & "(Ende nach " & MessageDisplayDuration & " Sekunden)"
+				s = s & NewLine & NewLine & "(Closing in " & MessageDisplayDuration & " seconds)"
 				WshShell.Popup s, MessageDisplayDuration, AppTitle, PopUpButtonOK + PopUpIconInfo
 			End If
 		End If
